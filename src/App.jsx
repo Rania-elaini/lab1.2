@@ -18,33 +18,38 @@ const InputWithLabel = ({
     />
   </div>
 );
-const List = ({ stories }) => {
-  return (
-    <section>
-      {stories.map((story) => (
-        <Item key={story.objectID} story={story} />
-      ))}
-    </section>
-  );
-};
-const Item = ({ story }) => (
+const List = ({ stories, onRemoveStory }) => (
+  <section>
+    {stories.map((story) => (
+      <Item
+        key={story.objectID}
+        story={story}
+        onRemoveStory={onRemoveStory}
+      />
+    ))}
+  </section>
+);
+const Item = ({ story, onRemoveStory }) => (
   <article>
     <h3>
       <a href={story.url} target="_blank" rel="noreferrer">
         {story.title}
       </a>
     </h3>
-
+    
     <p>Author: {story.author}</p>
     <p>
       Points: {story.points} Comments: {story.num_comments}
     </p>
+    <button type="button" onClick={() => onRemoveStory(story)}>
+  Delete
+</button>
   </article>
 );
 const App = () => {
   console.log("App renders");
 
-  const stories = [
+  const initialStories  = [
   {
     objectID: "1",
     title: "story 1",
@@ -73,11 +78,19 @@ const App = () => {
 const [searchTerm, setSearchTerm] = useState(
   localStorage.getItem("search") || ""
 );
+const [stories, setStories] = useState(initialStories);
 useEffect(() => {
   localStorage.setItem("search", searchTerm);
 }, [searchTerm]);
 const handleSearch = (event) => {
   setSearchTerm(event.target.value);
+};
+const handleRemoveStory = (item) => {
+  const newStories = stories.filter(
+    (story) => story.objectID !== item.objectID
+  );
+
+  setStories(newStories);
 };
 const searchedStories = stories.filter((story) =>
   story.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -95,17 +108,17 @@ const searchedStories = stories.filter((story) =>
 
 <hr />
 
-<List stories={searchedStories} />
+<List stories={searchedStories} onRemoveStory={handleRemoveStory} />
     
 {/*
   Reflection:
-  A controlled component is an input whose value is controlled by React state.
+  A reusable component avoids hard-coded values and accepts flexible props.
 
-  A side effect in React is code that interacts with something outside the component,
-  such as localStorage, APIs, or the browser.
+  Component composition means passing content between opening and closing
+  component tags and accessing it through children.
 
-  We use useEffect instead of calling side-effect code directly because useEffect
-  keeps side effects connected to state changes and separates them from event handlers.
+  We pass handlers down the component tree because the parent owns the state,
+  but child components often trigger the action.
 */}
     </main>
   );
