@@ -1,4 +1,54 @@
-const stories = [
+import { useState } from "react";
+
+const Header = () => <h1>Hacker News Style Stories</h1>;
+const Search = ({ onSearch }) => {
+  console.log("Search renders");
+
+  const handleChange = (event) => {
+    onSearch(event);
+  };
+
+  return (
+    <div>
+      <label htmlFor="search">Search: </label>
+      <input id="search" type="text" onChange={handleChange} />
+    </div>
+  );
+};
+const List = ({ stories }) => {
+  console.log("List renders");
+
+  return (
+    <section>
+      {stories.map((story) => (
+        <Item key={story.objectID} story={story} />
+      ))}
+    </section>
+  );
+};
+const Item = ({ story }) => (
+  <article>
+    <h3>
+      <a href={story.url} target="_blank" rel="noreferrer">
+        {story.title}
+      </a>
+    </h3>
+
+    <p>
+      <span>Author: {story.author}</span>
+    </p>
+
+    <p>
+      <span>Points: {story.points}</span>{" "}
+      <span>Comments: {story.num_comments}</span>
+    </p>
+  </article>
+);
+
+const App = () => {
+  console.log("App renders");
+
+  const stories = [
   {
     objectID: "1",
     title: "story 1",
@@ -24,65 +74,37 @@ const stories = [
     num_comments: 58,
   },
 ];
-const Header = () => <h1>Hacker News Style Stories</h1>;
-const Search = () => {
-  const handleChange = (event) => {
-    console.log("User typed in the search input");
-    console.log(event.target.value);
-  };
-
+const [searchTerm, setSearchTerm] = useState("");
+const handleSearch = (event) => {
+  console.log("Search value:", event.target.value);
+  setSearchTerm(event.target.value);
+};
+const searchedStories = stories.filter((story) =>
+  story.title.toLowerCase().includes(searchTerm.toLowerCase())
+);
   return (
-    <div>
-      <label htmlFor="search">Search: </label>
-      <input id="search" type="text" onChange={handleChange} />
-    </div>
+   <main> 
+  <Header />
+<Search onSearch={handleSearch} />
+
+<hr />
+
+<List stories={searchedStories} />
+    
+{/*
+  Reflection:
+  Props pass data from a parent component to a child component.
+  State stores data that changes over time inside a component.
+
+  We lift state up when multiple components need to use or affect the same data.
+  In this app, App owns searchTerm so it can pass the handler to Search
+  and pass filtered stories to List.
+
+  Filtering logic should live in App because App owns both the stories data
+  and the searchTerm state.
+*/}
+    </main>
   );
 };
-const List = () => (
-  <section>
-    {stories.map((story) => (
-      <article key={story.objectID}>
-        <h3>
-          <a href={story.url} target="_blank" rel="noreferrer">
-            {story.title}
-          </a>
-        </h3>
-
-        <p>
-          <span>Author: {story.author}</span>
-        </p>
-
-        <p>
-          <span>Points: {story.points}</span>{" "}
-          <span>Comments: {story.num_comments}</span>
-        </p>
-      </article>
-    ))}
-  </section>
-);
-
-const App = () => (
-  <main>
-    <Header />
-    <Search />
-
-    <hr />
-
-    <List />
-
-    {/*
-      Warm-up:
-      A component that becomes 300 lines long becomes harder to read and maintain.
-      A long component is harder to debug because many responsibilities are mixed together.
-      Engineers split code into smaller units to make it cleaner, reusable, and easier to test.
-
-      Reflection:
-      We use concise body arrow functions when the function only returns one value.
-      We use block body arrow functions when we need extra logic before returning JSX.
-      An event object contains information about the user action.
-      The typed input value is inside event.target.value.
-    */}
-  </main>
-);
-export default App;
+export default App; 
 
