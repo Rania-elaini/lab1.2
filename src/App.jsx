@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
 
 const Header = () => <h1>Hacker News Style Stories</h1>;
 const InputWithLabel = ({
@@ -21,69 +22,78 @@ const InputWithLabel = ({
 const List = ({ stories, onRemoveStory }) => (
   <section>
     {stories.map((story) => (
-      <Item
+       <Item
         key={story.objectID}
         story={story}
         onRemoveStory={onRemoveStory}
       />
-    ))}
+    ))} 
+    
   </section>
 );
 const Item = ({ story, onRemoveStory }) => (
   <article>
     <h3>
-      <a href={story.url} target="_blank" rel="noreferrer">
-        {story.title}
+      <a href={story.url || "#"} target="_blank" rel="noreferrer">
+        {story.title || "Untitled story"}
       </a>
     </h3>
-    
-    <p>Author: {story.author}</p>
+
     <p>
-      Points: {story.points} Comments: {story.num_comments}
+      <span>Author: {story.author}</span>
     </p>
+
+    <p>
+      <span>Points: {story.points}</span>{" "}
+      <span>Comments: {story.num_comments}</span>
+    </p>
+
     <button type="button" onClick={() => onRemoveStory(story)}>
-  Delete
-</button>
+      Delete
+    </button>
   </article>
 );
 const App = () => {
   console.log("App renders");
 
-  const initialStories  = [
-  {
-    objectID: "1",
-    title: "story 1",
-    url: "https://example.com/react-rendering-lists",
-    author: "Rania elaini",
-    points: 120,
-    num_comments: 34,
-  },
-  {
-    objectID: "2",
-    title: "story 2",
-    url: "https://developer.mozilla.org/",
-    author: "Henry Nelson",
-    points: 87,
-    num_comments: 19,
-  },
-  {
-    objectID: "3",
-    title: "story 3",
-    url: "https://news.ycombinator.com/",
-    author: "Maya Chen",
-    points: 203,
-    num_comments: 58,
-  },
-];
-const [searchTerm, setSearchTerm] = useState(
-  localStorage.getItem("search") || ""
+  const [searchTerm, setSearchTerm] = useState(
+  localStorage.getItem("search") || "React"
 );
-const [stories, setStories] = useState(initialStories);
+
+const [stories, setStories] = useState([]);
+const [isLoading, setIsLoading] = useState(false);
+const [isError, setIsError] = useState(false);
+
+const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`);
+
+
 useEffect(() => {
   localStorage.setItem("search", searchTerm);
 }, [searchTerm]);
+useEffect(() => {
+  if (!url) return;
+
+  setIsLoading(true);
+  setIsError(false);
+
+  fetch(url)
+    .then((response) => response.json())
+    .then((result) => {
+      setStories(result.hits);
+      setIsLoading(false);
+    })
+    .catch(() => {
+      setIsError(true);
+      setIsLoading(false);
+    });
+}, [url]);
 const handleSearch = (event) => {
   setSearchTerm(event.target.value);
+};
+const handleSearchSubmit = () => {
+  if (!searchTerm) return;
+
+  setUrl(`${API_ENDPOINT}${searchTerm}`);
 };
 const handleRemoveStory = (item) => {
   const newStories = stories.filter(
@@ -92,9 +102,7 @@ const handleRemoveStory = (item) => {
 
   setStories(newStories);
 };
-const searchedStories = stories.filter((story) =>
-  story.title.toLowerCase().includes(searchTerm.toLowerCase())
-);
+
   return (
    <main> 
   <Header />
@@ -106,19 +114,33 @@ const searchedStories = stories.filter((story) =>
   <strong>Search:</strong>
 </InputWithLabel>
 
+<button
+  type="button"
+  disabled={!searchTerm}
+  onClick={handleSearchSubmit}
+>
+  Submit
+</button>
+
 <hr />
 
-<List stories={searchedStories} onRemoveStory={handleRemoveStory} />
-    
+{isError && <p>Something went wrong ...</p>}
+
+{isLoading ? (
+  <p>Loading ...</p>
+) : (
+  <List stories={stories} onRemoveStory={handleRemoveStory} />
+)}
 {/*
   Reflection:
-  A reusable component avoids hard-coded values and accepts flexible props.
+  We use useEffect for fetching because fetching data is a side effect
+  that happens outside React's normal rendering.
 
-  Component composition means passing content between opening and closing
-  component tags and accessing it through children.
+  Loading state tells the user that data is currently being fetched.
+  Error state tells the user that something failed during fetching.
 
-  We pass handlers down the component tree because the parent owns the state,
-  but child components often trigger the action.
+  We control when fetching happens to avoid sending a request on every keystroke.
+  The app now fetches only when the user clicks Submit.
 */}
     </main>
   );
