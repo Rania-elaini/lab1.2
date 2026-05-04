@@ -1,23 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Header = () => <h1>Hacker News Style Stories</h1>;
-const Search = ({ onSearch }) => {
+const Search = ({ search, onSearch }) => {
   console.log("Search renders");
-
-  const handleChange = (event) => {
-    onSearch(event);
-  };
 
   return (
     <div>
       <label htmlFor="search">Search: </label>
-      <input id="search" type="text" onChange={handleChange} />
+      <input
+        id="search"
+        type="text"
+        value={search}
+        onChange={onSearch}
+      />
     </div>
   );
 };
 const List = ({ stories }) => {
-  console.log("List renders");
-
   return (
     <section>
       {stories.map((story) => (
@@ -34,17 +33,12 @@ const Item = ({ story }) => (
       </a>
     </h3>
 
+    <p>Author: {story.author}</p>
     <p>
-      <span>Author: {story.author}</span>
-    </p>
-
-    <p>
-      <span>Points: {story.points}</span>{" "}
-      <span>Comments: {story.num_comments}</span>
+      Points: {story.points} Comments: {story.num_comments}
     </p>
   </article>
 );
-
 const App = () => {
   console.log("App renders");
 
@@ -74,9 +68,13 @@ const App = () => {
     num_comments: 58,
   },
 ];
-const [searchTerm, setSearchTerm] = useState("");
+const [searchTerm, setSearchTerm] = useState(
+  localStorage.getItem("search") || ""
+);
+useEffect(() => {
+  localStorage.setItem("search", searchTerm);
+}, [searchTerm]);
 const handleSearch = (event) => {
-  console.log("Search value:", event.target.value);
   setSearchTerm(event.target.value);
 };
 const searchedStories = stories.filter((story) =>
@@ -85,7 +83,7 @@ const searchedStories = stories.filter((story) =>
   return (
    <main> 
   <Header />
-<Search onSearch={handleSearch} />
+<Search search={searchTerm} onSearch={handleSearch} />
 
 <hr />
 
@@ -93,15 +91,13 @@ const searchedStories = stories.filter((story) =>
     
 {/*
   Reflection:
-  Props pass data from a parent component to a child component.
-  State stores data that changes over time inside a component.
+  A controlled component is an input whose value is controlled by React state.
 
-  We lift state up when multiple components need to use or affect the same data.
-  In this app, App owns searchTerm so it can pass the handler to Search
-  and pass filtered stories to List.
+  A side effect in React is code that interacts with something outside the component,
+  such as localStorage, APIs, or the browser.
 
-  Filtering logic should live in App because App owns both the stories data
-  and the searchTerm state.
+  We use useEffect instead of calling side-effect code directly because useEffect
+  keeps side effects connected to state changes and separates them from event handlers.
 */}
     </main>
   );
