@@ -1,121 +1,78 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+const stories = [
+  {
+    objectID: "1",
+    title: "story 1",
+    url: "https://example.com/react-rendering-lists",
+    author: "Rania elaini",
+    points: 120,
+    num_comments: 34,
+  },
+  {
+    objectID: "2",
+    title: "story 2",
+    url: "https://developer.mozilla.org/",
+    author: "Henry Nelson",
+    points: 87,
+    num_comments: 19,
+  },
+  {
+    objectID: "3",
+    title: "story 3",
+    url: "https://news.ycombinator.com/",
+    author: "Maya Chen",
+    points: 203,
+    num_comments: 58,
+  },
+];
 
 function App() {
-  const [count, setCount] = useState(0)
+  console.log(stories[0]);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
+    <main>
+      <h1>Hacker News Style Stories</h1>
+
+      {/*
+        Data structure:
+        Each story object has:
+        - objectID: unique identifier
+        - title: article title
+        - url: article link
+        - author: person who posted it
+        - points: popularity score
+        - num_comments: number of comments
+
+        The React key should be objectID because it is unique and stable.
+        This structure is realistic for an API because real APIs usually return
+        arrays of objects with IDs and multiple properties.
+      */}
+
+      <section>
+        {stories.map(function (story) {
+          return (
+            <article key={story.objectID}>
+              <h3>
+                <a href={story.url} target="_blank" rel="noreferrer">
+                  {story.title}
+                </a>
+              </h3>
+
+              <p>
+                <span>Author: {story.author}</span>
+              </p>
+
+              <p>
+                <span>Points: {story.points}</span>{" "}
+                <span>Comments: {story.num_comments}</span>
+              </p>
+            </article>
+          );
+        })}
       </section>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      
+    </main>
+  );
 }
 
-export default App
+export default App;
