@@ -24,55 +24,68 @@ const stories = [
     num_comments: 58,
   },
 ];
+function Header() {
+  return <h1>Hacker News Style Stories</h1>;
+}
+function Search() {
+  return (
+    <div>
+      <label htmlFor="search">Search: </label>
+      <input id="search" type="text" />
+    </div>
+  );
+}
+function List() {
+  return (
+    <section>
+      {stories.map(function (story) {
+        return (
+          <article key={story.objectID}>
+            <h3>
+              <a href={story.url} target="_blank" rel="noreferrer">
+                {story.title}
+              </a>
+            </h3>
+
+            <p>
+              <span>Author: {story.author}</span>
+            </p>
+
+            <p>
+              <span>Points: {story.points}</span>{" "}
+              <span>Comments: {story.num_comments}</span>
+            </p>
+          </article>
+        );
+      })}
+    </section>
+  );
+}
 
 function App() {
-  console.log(stories[0]);
-
   return (
     <main>
-      <h1>Hacker News Style Stories</h1>
+      <Header />
+      <Search />
+
+      <hr />
+
+      <List />
 
       {/*
-        Data structure:
-        Each story object has:
-        - objectID: unique identifier
-        - title: article title
-        - url: article link
-        - author: person who posted it
-        - points: popularity score
-        - num_comments: number of comments
+        Reflection:
+        App now organizes the page and renders the main components.
 
-        The React key should be objectID because it is unique and stable.
-        This structure is realistic for an API because real APIs usually return
-        arrays of objects with IDs and multiple properties.
+        List is responsible for rendering the stories using map().
+
+        Search is responsible for displaying the search label and input.
+
+        This structure is cleaner because each component has one clear job,
+        making the code easier to read, debug, and maintain.
       */}
-
-      <section>
-        {stories.map(function (story) {
-          return (
-            <article key={story.objectID}>
-              <h3>
-                <a href={story.url} target="_blank" rel="noreferrer">
-                  {story.title}
-                </a>
-              </h3>
-
-              <p>
-                <span>Author: {story.author}</span>
-              </p>
-
-              <p>
-                <span>Points: {story.points}</span>{" "}
-                <span>Comments: {story.num_comments}</span>
-              </p>
-            </article>
-          );
-        })}
-      </section>
-
-      
     </main>
   );
 }
 
 export default App;
+
