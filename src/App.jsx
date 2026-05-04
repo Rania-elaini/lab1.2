@@ -24,68 +24,65 @@ const stories = [
     num_comments: 58,
   },
 ];
-function Header() {
-  return <h1>Hacker News Style Stories</h1>;
-}
-function Search() {
+const Header = () => <h1>Hacker News Style Stories</h1>;
+const Search = () => {
+  const handleChange = (event) => {
+    console.log("User typed in the search input");
+    console.log(event.target.value);
+  };
+
   return (
     <div>
       <label htmlFor="search">Search: </label>
-      <input id="search" type="text" />
+      <input id="search" type="text" onChange={handleChange} />
     </div>
   );
-}
-function List() {
-  return (
-    <section>
-      {stories.map(function (story) {
-        return (
-          <article key={story.objectID}>
-            <h3>
-              <a href={story.url} target="_blank" rel="noreferrer">
-                {story.title}
-              </a>
-            </h3>
+};
+const List = () => (
+  <section>
+    {stories.map((story) => (
+      <article key={story.objectID}>
+        <h3>
+          <a href={story.url} target="_blank" rel="noreferrer">
+            {story.title}
+          </a>
+        </h3>
 
-            <p>
-              <span>Author: {story.author}</span>
-            </p>
+        <p>
+          <span>Author: {story.author}</span>
+        </p>
 
-            <p>
-              <span>Points: {story.points}</span>{" "}
-              <span>Comments: {story.num_comments}</span>
-            </p>
-          </article>
-        );
-      })}
-    </section>
-  );
-}
+        <p>
+          <span>Points: {story.points}</span>{" "}
+          <span>Comments: {story.num_comments}</span>
+        </p>
+      </article>
+    ))}
+  </section>
+);
 
-function App() {
-  return (
-    <main>
-      <Header />
-      <Search />
+const App = () => (
+  <main>
+    <Header />
+    <Search />
 
-      <hr />
+    <hr />
 
-      <List />
+    <List />
 
-      {/*
-        Reflection:
-        App now organizes the page and renders the main components.
+    {/*
+      Warm-up:
+      A component that becomes 300 lines long becomes harder to read and maintain.
+      A long component is harder to debug because many responsibilities are mixed together.
+      Engineers split code into smaller units to make it cleaner, reusable, and easier to test.
 
-        List is responsible for rendering the stories using map().
-
-        Search is responsible for displaying the search label and input.
-
-        This structure is cleaner because each component has one clear job,
-        making the code easier to read, debug, and maintain.
-      */}
-    </main>
-  );
-}
-
+      Reflection:
+      We use concise body arrow functions when the function only returns one value.
+      We use block body arrow functions when we need extra logic before returning JSX.
+      An event object contains information about the user action.
+      The typed input value is inside event.target.value.
+    */}
+  </main>
+);
 export default App;
 
