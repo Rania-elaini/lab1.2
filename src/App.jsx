@@ -1,21 +1,23 @@
 import { useState, useEffect } from "react";
 
 const Header = () => <h1>Hacker News Style Stories</h1>;
-const Search = ({ search, onSearch }) => {
-  console.log("Search renders");
-
-  return (
-    <div>
-      <label htmlFor="search">Search: </label>
-      <input
-        id="search"
-        type="text"
-        value={search}
-        onChange={onSearch}
-      />
-    </div>
-  );
-};
+const InputWithLabel = ({
+  id,
+  value,
+  type = "text",
+  onInputChange,
+  children,
+}) => (
+  <div>
+    <label htmlFor={id}>{children}</label>
+    <input
+      id={id}
+      type={type}
+      value={value}
+      onChange={onInputChange}
+    />
+  </div>
+);
 const List = ({ stories }) => {
   return (
     <section>
@@ -83,7 +85,13 @@ const searchedStories = stories.filter((story) =>
   return (
    <main> 
   <Header />
-<Search search={searchTerm} onSearch={handleSearch} />
+<InputWithLabel
+  id="search"
+  value={searchTerm}
+  onInputChange={handleSearch}
+>
+  <strong>Search:</strong>
+</InputWithLabel>
 
 <hr />
 
